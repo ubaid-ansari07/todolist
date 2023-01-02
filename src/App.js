@@ -9,8 +9,21 @@ export default class App extends Component {
       todolist:dummyJson,
       task:'',
       active:'Active',
-      deactive:'Deactive'
+      deactive:'Deactive',
+      activeQty:'',
+      deactiveQty:'',
     }
+  }
+  componentDidMount(){
+    let ac=0;
+    let deac=0;
+    this.state.todolist.map(obj=>{
+      if(obj.status === 'active')
+        ac++;
+      else
+        deac++;
+    })
+    this.setState({activeQty:ac,deactiveQty:deac})
   }
   add=(e)=>{
     e.preventDefault();
@@ -48,18 +61,18 @@ export default class App extends Component {
            </div>
           </form>
         </div>
-        <div className="row">
+        <div className="row mt-5">
           <div className="col-2">
-              <button type="button" style={{backgroundColor:'red'}} className='btn btn-danger'>{this.state.active}:<span></span></button>
+              <button type="button" style={{backgroundColor:'red'}} className='btn btn-danger'>{this.state.active}:<span>{this.state.activeQty}</span></button>
           </div>
           <div className="col-2">
-              <button type="button" style={{backgroundColor:'green'}} className='btn btn-danger'>{this.state.deactive}:<span></span></button>
+              <button type="button" style={{backgroundColor:'green'}} className='btn btn-danger'>{this.state.deactive}:<span>{this.state.deactiveQty}</span></button>
           </div>
         </div>
-        <div className="row">
+        <div className="row mt-5">
           <table className="table text-center">
             <thead>
-                <tr>
+                <tr style={{backgroundColor:'grey',color:'white'}}>
                   <th>Sno.</th>
                   <th>Task</th>
                   <th>Date</th>
@@ -78,7 +91,7 @@ export default class App extends Component {
                     <td>{index+1}</td>
                     <td>{obj.task}</td>
                     <td>{obj.date}</td>
-                    <td>{obj.status === 'active'?<button value={'active'} className="btn btn-danger">Active</button>:''}</td>
+                    <td>{obj.status === 'active'?<button onClick={(e)=>{this.setState({})}} value={'Deactive'} className="btn btn-danger">{obj.status == 'active' ?'Deactive' : 'Active'}</button>:''}</td>
                   </tr>
                 })}
             </tbody>
