@@ -1,7 +1,7 @@
 // import dummyJson from "./dummyJson";
 // import React, { Component } from 'react'
 
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import dummyJson from "./dummyJson"
 
 
@@ -13,38 +13,55 @@ export default ()=>{
   const [deActiveQty,setDeactiveQty] = useState(0);
   const [activeBtn,setActiveBtn] = useState(true);
   const [deActiveBtn,setDeactiveBtn] = useState(false);
+  let taskField = useRef('');
+  let priorityField = useRef(0);
 
-  const changeStatus=(status,task)=>{
-    let index= tasklist.findIndex(obj=>obj.task == task)
+  const changeStatus=(status,id)=>{
+    let index= tasklist.findIndex(obj=>obj.id == id)
     let newObj = tasklist[index];
     newObj.status = status
     tasklist.splice(index,1);
     setTasklist([...tasklist,newObj])
   }
   useEffect(()=>{
+    console.log(tasklist);
     let activeQty = tasklist.filter(task=>task.status === 'active' ).length;
     let deActiveQty = tasklist.length-activeQty
 
     setActiveQty(activeQty)
     setDeactiveQty(deActiveQty)
   },[tasklist])
+
+  const addTask = ()=>{
+    let date= new Date()
+    let ids = tasklist.map(task=>task.id);
+    let newObj = {
+      id : Math.max(...ids)+1,
+      task : taskField.current.value,
+      date : date.getDay()+'-'+(date.getMonth()+1)+'-'+date.getFullYear(),
+      pid : priorityField.current.value*1,
+      status : 'active'
+    }
+    setTasklist([...tasklist,newObj])
+  }
   return (
     <div className="container">
+      <center><h1>TODO List</h1></center>
       <div className="row mt-5">
           <div className="col-md-6 form-group" >
-            <input type="text" placeholder="Enter task name" className="form-control"/>
+            <input type="text" placeholder="Enter task name" className="form-control" ref={taskField}/>
           </div>
           <div className="col-md-6 form-group" >
-            <select className="form-select">
+            <select className="form-select" ref={priorityField}>
               {
-                priority.map((pr,index)=><option key={index} value={pr.id}>{pr.priority}</option>)
+                priority.map((pr,index)=><option key={index} value={pr.id}>{pr.pr}</option>)
               }
             </select>
           </div>
       </div>
       <div className="row mt-5">
         <div className="col-md-3">
-          <button type="" className="btn btn-success"> Add</button>
+          <button type="" className="btn btn-success" onClick={addTask}> Add</button>
         </div>
       </div>
       <div className="row mt-5">
@@ -78,8 +95,8 @@ export default ()=>{
             </td>
             <td>{
               defaultTaskStatus === 'active' ? 
-              <button type="" className="btn btn-danger" onClick={()=>changeStatus('deactive',task.task)}>Deactive</button> :
-              <button type="" className="btn btn-danger" onClick={()=>changeStatus('active',task.task)}>Active</button>
+              <button type="" className="btn btn-danger" onClick={()=>changeStatus('deactive',task.id)}>Deactive</button> :
+              <button type="" className="btn btn-danger" onClick={()=>changeStatus('active',task.id)}>Active</button>
               }</td>
           </tr>)
           
